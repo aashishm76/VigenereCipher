@@ -3,8 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Helper Functions
-//
+#define MAX_CHARACTERS 512
 
 // Strip punctuation
 void stripPunctuation(char *strInput)
@@ -26,17 +25,35 @@ void stripPunctuation(char *strInput)
 }
 
 // Print CipherText
-void cipher_Print(char *ciphertext);
+void printfunction(char *ciphertext);
 
-// Main Functions
-
-// Plain text handler
+// Handle Plain text input
 char *plaintextHandler(char *plaintextfile)
 {
-  
+  // variables
+  char plaintextfile[MAX_CHARACTERS];
+
+  // FILE IO
+  FILE *input = NULL;
+  input = fopen(plaintextfile, "r");
+
+  // Read the plaintext file
+  while (fscanf(input, "%s", plaintextfile) != EOF)
+  {
+    // Strip your punctuation
+    stripPunctuation(input);
+
+    // 
+
+  }
+
+
+
+
+
+
 
 }
-
 // Input File handler
 char *inputHandler(char *inputfile);
 
