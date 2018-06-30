@@ -34,9 +34,10 @@ void stripPunctuation(char *strInput)
 char *ptextHandler(char *ptextfile)
 {
   char *ptextarray = NULL;
+  char *maxptextarray = NULL;
   char ptextbuffer[MAX_CHARACTERS];
   int flag = 0;
-  int ptextlen = 0;
+  int ptextlen, bufferlen;
   int index = 0;
   int i;
 
@@ -59,8 +60,30 @@ char *ptextHandler(char *ptextfile)
 
     flag = 1;
   }
+  // Check if plaintext is 512 chars and if not pad it with X's
+  ptextlen = strlen(ptextarray);
 
-  if (ptextlen != 512)
+  // If plaintext passed in is bigger than 512 cut its size down
+  if (ptextlen > 512)
+  { 
+    maxptextarray = malloc(sizeof(char) * MAX_CHARACTERS);
+
+    for(i = 0; i < 512; i++)
+    {
+      maxptextarray[i] = ptextarray[i];
+    }
+    // Print out to console
+    for (i = 0; i < 512; i++)
+    {
+      if ( (i % 80) == 0)
+        printf("\n");
+
+      printf("%c", maxptextarray[i]);
+    }
+    return maxptextarray;
+  }
+
+  if (ptextlen < 512)
   {
     // Get the index value of where the array ends
     while(ptextarray[index] != '\0')
@@ -72,22 +95,19 @@ char *ptextHandler(char *ptextfile)
       ptextarray[index] = 'x';
       index++;
     }
+
+    // Print out to console
+    for (i = 0; i < 512; i++)
+    {
+      if ( (i % 80) == 0)
+        printf("\n");
+
+      printf("%c", ptextarray[i]);
+    }
+
+    return ptextarray;
   }
-
-  // Check if plaintext is 512 chars and if not pad it with X's
-  ptextlen = strlen(ptextarray);
-
-  // Print out to console
-  for (i = 0; i < ptextlen; i++)
-  {
-    if ( (i % 80) == 0)
-      printf("\n");
-
-    printf("%c", ptextarray[i]);
-  }
-
   fclose(plaintextfile);
-  return ptextarray;
 }
 
 char *keyHandler(char *key)
