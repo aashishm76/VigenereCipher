@@ -38,6 +38,7 @@ char *ptextHandler(char *ptextfile)
   int flag = 0;
   int ptextlen = 0;
   int index = 0;
+  int i;
 
   FILE *plaintextfile = NULL;
   plaintextfile = fopen(ptextfile, "r");
@@ -59,9 +60,6 @@ char *ptextHandler(char *ptextfile)
     flag = 1;
   }
 
-  // Check if plaintext is 512 chars and if not pad it with X's
-  ptextlen = strlen(ptextarray);
-
   if (ptextlen != 512)
   {
     // Get the index value of where the array ends
@@ -71,12 +69,24 @@ char *ptextHandler(char *ptextfile)
     // Now continue looping and pad with X's
     while (index != 512)
     {
-      ptextarray[index] = 'X';
+      ptextarray[index] = 'x';
       index++;
     }
   }
-//TEST PRINT
-printf("%s\n", ptextarray);
+
+  // Check if plaintext is 512 chars and if not pad it with X's
+  ptextlen = strlen(ptextarray);
+
+  // Print out to console
+  for (i = 0; i < ptextlen; i++)
+  {
+    if ( (i % 80) == 0)
+      printf("\n");
+
+    printf("%c", ptextarray[i]);
+  }
+
+  fclose(plaintextfile);
   return ptextarray;
 }
 
@@ -85,6 +95,7 @@ char *keyHandler(char *key)
   char *keytextArray;
   char keybuffer[MAX_CHARACTERS];
   int flag = 0;
+  int i, keytextlen;
 
   FILE *keyFile = NULL;
   keyFile = fopen(key, "r");
@@ -105,45 +116,90 @@ char *keyHandler(char *key)
 
     flag = 1;
   }
-// TEST print
-printf("%s\n", keytextArray);
+
+  keytextlen = strlen(keytextArray);
+
+  // Print out to console
+  for (i = 0; i < keytextlen; i++)
+  {
+    if ( (i % 80) == 0)
+      printf("\n");
+
+    printf("%c", keytextArray[i]);
+  }
+
+  fclose(keyFile);
   return keytextArray;
 }
 
 char *ciphertexthandler(char *cleanptext, char *cleankey)
 {
-  char *cipher = NULL;
-  int i, letterNum;
-  char letter;
+  char *ciphertext;
+  char cipherLetter;
+  int i = 0, j = 0;
+  int keyIndex, ptextIndex, cipherIndex, cipherlen;
 
-  cipher = malloc(sizeof(char) * MAX_CHARACTERS);
+  // Malloc space for ciphertext array
+  ciphertext = malloc(sizeof(char) * MAX_CHARACTERS);
 
-  if (strlen(cleanptext) == strlen(cleankey))
+  // Encryption Algorithm
+  while (i != MAX_CHARACTERS)
   {
-    while (i != 512)
-    {
-      letterNum = (cleanptext[i] + cleankey[i]) % 26;
-      letterNum = letterNum + 'a';
-      char letter =
-    }
+    // This resets the key
+    if (cleankey[j] == '\0')
+      j = 0;
+
+    // Modular Math
+    keyIndex = cleankey[j] - 'a';
+    ptextIndex = cleanptext[i] - 'a';
+    cipherIndex = ((keyIndex + ptextIndex) % 26);
+
+    // Cipher text
+    cipherLetter = cipherIndex + 'a';
+    ciphertext[i] = cipherLetter;
+
+    // Increment loop variables
+    i++;
+    j++;
   }
 
-}
+  cipherlen = strlen(ciphertext);
 
+  // Print out to console
+  for (i = 0; i < cipherlen; i++)
+  {
+    if ( (i % 80) == 0)
+      printf("\n");
+
+    printf("%c", ciphertext[i]);
+  }
+
+  return ciphertext;
+}
 
 int main(int argc, char *argv[])
 {
   // variables
   char *plaintext, *key, *ciphertext;
+  char *cleanPlainText, *keyText;
 
   // Read CLI and malloc appropriately
-  plaintext = malloc(sizeof(char) * strlen(argv[1]));
-  key = malloc(sizeof(char) * strlen(argv[2]));
-  plaintext = argv[1];
-  key = argv[2];
+  key = malloc(sizeof(char) * strlen(argv[1]));
+  plaintext = malloc(sizeof(char) * strlen(argv[2]));
 
-  ptextHandler(plaintext);
-  keyHandler(key);
+  key = argv[1];
+  plaintext = argv[2];
+
+  printf("\n\nVigenere Key:\n");
+  keyText = keyHandler(key);
+
+  printf("\n\nPlaintext:\n");
+  cleanPlainText = ptextHandler(plaintext);
+
+  printf("\n\nCiphertext:\n");
+  ciphertexthandler(cleanPlainText, keyText);
+
+  printf("\n");
 
   return 0;
 }
